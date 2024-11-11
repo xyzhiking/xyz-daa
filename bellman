@@ -1,0 +1,74 @@
+#include<iostream>
+#include<limits.h>
+#include<vector>
+using namespace std;
+
+struct Edge {
+    int src;
+    int dest;
+    int weight;
+};
+
+void bellmanFord(int V, int E, int start, vector<Edge>& edges) 
+ {
+    vector<int> dist(V, INT_MAX);
+    dist[start-1] = 0;  // No need to subtract 1 from start here
+
+    // Relaxation of vertices
+
+    for(int i = 0; i < V - 1; i++) 
+    {
+        for(int j = 0; j < E; j++) 
+        {
+            int u = edges[j].src;
+            int v = edges[j].dest;
+            int weight = edges[j].weight;
+
+            if(dist[u-1] != INT_MAX && dist[u-1] + weight < dist[v-1])
+             {
+                dist[v-1] = dist[u-1] + weight;
+            }
+        }
+    }
+
+    // Check for negative edge cycle
+    for(int i = 0; i < E; i++) 
+    {
+        int u = edges[i].src;
+        int v = edges[i].dest;
+        int weight = edges[i].weight;
+        if(dist[u-1] != INT_MAX && dist[u-1] + weight < dist[v-1]) 
+        {
+            cout << "Negative edges cycle is forming";
+            return;
+        }
+    }
+
+    cout << "Vertex distance from src to destination" << endl;
+    for(int i = 0; i < V; i++) 
+    {
+        cout << i + 1 << "\t\t" << dist[i] << endl;  // Print 1-indexed vertices
+    }
+}
+
+int main() 
+{
+    int V, E, start;
+    cout << "Enter number of vertices: ";
+    cin >> V;
+    cout << "Enter number of edges: ";
+    cin >> E;
+
+    vector<Edge> edges(E);
+    cout << "Enter edges (source, destination, weight)" << endl;
+    for(int i = 0; i < E; i++) 
+    {
+        cin >> edges[i].src >> edges[i].dest >> edges[i].weight;
+    }
+
+    cout << "Enter the start: ";
+    cin >> start;
+
+    bellmanFord(V, E, start, edges);
+    return 0;
+}
